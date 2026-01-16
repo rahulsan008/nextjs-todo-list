@@ -1,0 +1,31 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  pre_build:
+    commands:
+      - echo "Logging into ECR"
+      - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      - export DOCKER_DEFAULT_PLATFORM=linux/arm64
+      - docker run --privileged --rm tonistiigi/binfmt --install arm64 >/dev/null
+      - docker buildx create --use --name arm64builder || docker buildx use arm64builder
+      - aws ecr get-login-password --region $AWS_REGION | \
+        docker login --username AWS --password-stdin \
+        "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+
+  build:
+    commands:
+      - echo "Building TODO app image"
+      - docker buildx build \
+          --platform linux/arm64 \
+          -f deploy/Dockerfile \
+          -t $ECR_REPO:latest \
+          --load .
+
+  post_build:
+    commands:
+      - echo "Pushing image"
+      - docker push $ECR_REPO:latest
+      - echo "Build completed on `date`"
