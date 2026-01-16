@@ -4,6 +4,12 @@ env:
   shell: bash
 
 phases:
+  install:
+    commands:
+      - echo "Verifying Docker installation"
+      - docker --version
+      - docker info
+
   pre_build:
     commands:
       - echo "Logging into ECR"
