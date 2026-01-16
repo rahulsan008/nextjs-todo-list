@@ -1,5 +1,6 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
 # Install dependencies early so they can be cached between builds.
 COPY package.json yarn.lock ./
