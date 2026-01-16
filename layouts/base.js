@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 const BaseLayout = ({ children }) => {
   return (
     <div>
+
       <Head>
         <title>Next.js TODO List APP by Junior Garcia | Challenge</title>
         <link rel="icon" href="/favicon.ico" />
