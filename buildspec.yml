@@ -17,18 +17,12 @@ phases:
       - docker run --privileged --rm tonistiigi/binfmt --install arm64 >/dev/null
       - export DOCKER_DEFAULT_PLATFORM=linux/arm64
       - docker buildx create --use --name arm64builder || docker buildx use arm64builder
-      - aws ecr get-login-password --region $AWS_REGION | \
-        docker login --username AWS --password-stdin \
-        "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
   build:
     commands:
       - echo "Building TODO app image"
-      - docker buildx build \
-          --platform linux/arm64 \
-          -f deploy/Dockerfile \
-          -t $ECR_REPO:latest \
-          --load .
+      - docker buildx build --platform linux/arm64 -f deploy/Dockerfile -t $ECR_REPO:latest --load .
 
   post_build:
     commands:
